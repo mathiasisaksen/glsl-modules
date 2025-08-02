@@ -8,7 +8,6 @@
 <div>
 
 [![npm version](https://img.shields.io/npm/v/glsl-modules.svg)](https://www.npmjs.com/package/glsl-modules)
-[![npm bundle size](https://img.shields.io/bundlephobia/minzip/glsl-modules?style=flat-square)](https://bundlephobia.com/package/glsl-modules@latest)
 
 </div>
 
