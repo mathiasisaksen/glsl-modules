@@ -1,0 +1,34 @@
+{
+  "name": "glsl-modules",
+  "version": "0.1.0",
+  "exports": {
+  ".": {
+    "types": "./dist/index.d.ts",
+    "import": "./dist/index.js",
+    "require": "./dist/index.js"
+  },
+  "./plugins": {
+    "types": "./dist/plugins/index.d.ts",
+    "import": "./dist/plugins/index.js",
+    "require": "./dist/plugins/index.js"
+  }
+},
+  "files": ["./dist"],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": ["glsl", "shader", "preprocessor", "webgl", "modules", "plugin"],
+  "author": "Mathias Isaksen <mathias@st4yho.me> (https://st4yho.me)",
+  "license": "MIT",
+  "homepage": "https://github.com/mathiasisaksen/glsl-modules#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mathiasisaksen/glsl-modules.git"
+  },
+  "bugs": "https://github.com/mathiasisaksen/glsl-modules/issues",
+  "description": "A GLSL preprocessor for JavaScript that adds modular import/export support and a flexible plugin system for custom syntax and functionality.",
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}
