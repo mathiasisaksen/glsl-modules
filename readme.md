@@ -1,13 +1,11 @@
 <div align="center">
-  <img src="https://st4yho.me/wp-content/uploads/2025/08/glsl-modules-code.png" height="200" alt="glsl-modules code example" />
+  <img src="https://st4yho.me/wp-content/uploads/2025/08/glsl-modules-code.png" width="450" alt="glsl-modules code example" />
 </div>
 
 
-# <img src="https://st4yho.me/wp-content/uploads/2025/08/logo.svg" width="100" align="center" alt="glsl-modules icon">&nbsp;&nbsp;&nbsp;glsl-modules
+# <img src="https://st4yho.me/wp-content/uploads/2025/08/logo.svg" width="90" align="center" alt="glsl-modules icon">&nbsp;&nbsp;&nbsp;glsl-modules
 
 [![npm version](https://img.shields.io/npm/v/glsl-modules.svg)](https://www.npmjs.com/package/glsl-modules)
-
-</div>
 
 **glsl-modules** is a GLSL preprocessor for JavaScript/TypeScript that extends GLSL with client-side module import/export functionality and a plugin system for custom syntax.
 This means that the shaders are dynamically built and resolved at run time, not at build time.
