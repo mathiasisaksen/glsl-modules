@@ -1,11 +1,9 @@
-
 <div align="center">
-  <img src="https://st4yho.me/wp-content/uploads/2025/08/logo.svg" width="250" />
+  <img src="https://st4yho.me/wp-content/uploads/2025/08/glsl-modules-code.png" height="200" alt="glsl-modules code example" />
 </div>
 
-# glsl-modules
 
-<div>
+# <img src="https://st4yho.me/wp-content/uploads/2025/08/logo.svg" width="100" align="center" alt="glsl-modules icon">&nbsp;&nbsp;&nbsp;glsl-modules
 
 [![npm version](https://img.shields.io/npm/v/glsl-modules.svg)](https://www.npmjs.com/package/glsl-modules)
 
