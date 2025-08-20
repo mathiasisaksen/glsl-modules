@@ -1,24 +1,36 @@
 {
   "name": "glsl-modules",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "exports": {
-  ".": {
-    "types": "./dist/index.d.ts",
-    "import": "./dist/index.js",
-    "require": "./dist/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./plugins": {
+      "types": "./dist/plugins/index.d.ts",
+      "import": "./dist/plugins/index.js",
+      "require": "./dist/plugins/index.js"
+    }
   },
-  "./plugins": {
-    "types": "./dist/plugins/index.d.ts",
-    "import": "./dist/plugins/index.js",
-    "require": "./dist/plugins/index.js"
-  }
-},
-  "files": ["./dist"],
+  "files": [
+    "./dist"
+  ],
   "scripts": {
-    "build": "tsc",
-    "prepublishOnly": "npm run build"
+    "build": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "npm run build",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest run --coverage"
   },
-  "keywords": ["glsl", "shader", "preprocessor", "webgl", "modules", "plugin"],
+  "keywords": [
+    "glsl",
+    "shader",
+    "preprocessor",
+    "webgl",
+    "modules",
+    "plugin"
+  ],
   "author": "Mathias Isaksen <mathias@st4yho.me> (https://st4yho.me)",
   "license": "MIT",
   "homepage": "https://github.com/mathiasisaksen/glsl-modules#readme",
@@ -29,6 +41,10 @@
   "bugs": "https://github.com/mathiasisaksen/glsl-modules/issues",
   "description": "A GLSL preprocessor for JavaScript that adds modular import/export support and a flexible plugin system for custom syntax and functionality.",
   "devDependencies": {
-    "typescript": "^5.7.3"
+    "@types/node": "^24.2.1",
+    "@vitest/ui": "^3.2.4",
+    "playwright": "^1.55.0",
+    "typescript": "^5.7.3",
+    "vitest": "^3.2.4"
   }
 }

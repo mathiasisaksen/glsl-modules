@@ -57,7 +57,7 @@ export type GLSLPlugin = {
   postprocess?: (code: string, entity: ModuleEntity, context: PluginContext, isShader: boolean) => string,
 }
 
-export type GLSLPluginFunction<A extends any[] = any[]> = (...args: A) => GLSLPlugin;
+type GLSLPluginFunction<A extends any[] = any[]> = (...args: A) => GLSLPlugin;
 
 export function definePlugin<A extends any[]>(pluginFunction: GLSLPluginFunction<A>) {
   return pluginFunction;

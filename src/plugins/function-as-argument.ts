@@ -1,7 +1,7 @@
 import { GLSLPlugin, PluginContext } from "../core-system/glsl-plugin.js";
 import { EntityDependency } from "../core-system/module-content/entity-dependency.js";
 import { Argument, Func } from "../core-system/module-content/func.js";
-import { ModuleEntity } from "../core-system/module-content/module-entity.js";
+import { ModuleEntity } from "../core-system//module-content/types.js";
 import { findClosingIndex } from "../utils/find-closing-index.js";
 import { Match, matchIterator } from "../utils/match-iterator.js";
 import { splitAtCommasOutsideBraces } from "../utils/split-at-commas-outside-braces.js";
@@ -95,7 +95,7 @@ function determineNewFunctions(moduleEntities: ModuleEntity[], context: PluginCo
 
   let entityIndex = Math.max(...moduleEntities.map((entity) => entity.index + entity.definition.length)) + 2;
   
-  let candidateEntities = [...moduleEntities];
+  let candidateEntities = Array.from(moduleEntities);
 
   while (candidateEntities.length > 0) {
     const candidateEntity = candidateEntities.pop()!;
@@ -109,7 +109,7 @@ function determineNewFunctions(moduleEntities: ModuleEntity[], context: PluginCo
 
     const { definition } = candidateEntity;
 
-    for (const { id, localName } of [...candidateEntity.dependencies]) {
+    for (const { id, localName } of Array.from(candidateEntity.dependencies)) {
       const higherOrderFunctions = memoizedHOFs[id] ??= findHigherOrderFunctions(context.getEntitiesById(id));
 
       for (const func of higherOrderFunctions) {

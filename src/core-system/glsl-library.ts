@@ -1,6 +1,6 @@
 import { GLSLModule, ModuleContext } from "./glsl-module.js";
 import { GLSLPlugin } from "./glsl-plugin.js";
-import { ModuleEntity } from "./module-content/module-entity.js";
+import { ModuleEntity } from "./module-content/types.js";
 
 type LibraryStructure = {
   [key: string]: LibraryStructure | GLSLModule | string;
@@ -78,12 +78,10 @@ export class GLSLLibrary {
     this.compile();
 
     const module = this.modules[path];
+
+    if (!module) throw new Error(`No module "${path}" in library ${this.name}`);
     
     return module.getEntity({ name, type, originId });
-  }
-
-  resolveDependencies(entity: ModuleEntity, seenIds?: Set<string>) {
-    return resolveDependenciesHelper(entity, this, seenIds ?? new Set());
   }
 
   addDependency(library: GLSLLibrary) {
@@ -107,29 +105,4 @@ function processLibraryStructure(parentName: string, structure: LibraryStructure
     }
 
   }
-}
-
-function resolveDependenciesHelper(entity: ModuleEntity, library: GLSLLibrary, seenIds: Set<string>) {
-  const entries: ModuleEntity[] = [];
-
-  for (const { id, path, name, type } of entity.dependencies) {
-    if (seenIds.has(id)) continue;
-
-    seenIds.add(id);
-
-    const libraryName = GLSLLibrary.extractLibraryNameFromPath(path);
-    
-    const dependencyLibrary = libraryName === library.name ? library : library.dependencies[libraryName];
-    const exportedEntities = dependencyLibrary.getEntity(path, name, type, entity.id);
-    
-    entries.push(...exportedEntities);
-
-    for (const entry of exportedEntities) {
-      const dependencies = resolveDependenciesHelper(entry, dependencyLibrary, seenIds);
-      entries.push(...dependencies);
-    }
-
-  }
-
-  return entries;
 }

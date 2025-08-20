@@ -1,7 +1,8 @@
 import { GLSLPlugin } from "../core-system/glsl-plugin.js";
-import { Func, functionSignatureRegex } from "../core-system/module-content/func.js";
-import { assert } from "../utils/assert.js";
-import { Match, matchIterator } from "../utils/match-iterator.js";
+import { Func } from "../core-system/module-content/func.js";
+import { matchIterator } from "../utils/match-iterator.js";
+
+// Work in progress!
 
 const pluginId = "destructuring";
 
@@ -36,7 +37,7 @@ float someFunction() {
 
 `
 
-export function destructuringPlugin(): GLSLPlugin {
+function destructuringPlugin(): GLSLPlugin {
   
   return {
     id: pluginId,
@@ -69,8 +70,8 @@ type Block = {
 }
 
 function determineBlockStructure(code: string) {
-  const destructures = [...matchIterator(code, destructureRegex)];
-  const forLoops = [...matchIterator(code, /\bfor\s*\(/)];
+  const destructures = Array.from(matchIterator(code, destructureRegex));
+  const forLoops = Array.from(matchIterator(code, /\bfor\s*\(/));
 
   let destructureIndex = 0;
   let forIndex = 0;
@@ -79,7 +80,7 @@ function determineBlockStructure(code: string) {
   const rootStart = code.indexOf("{");
   let rootBlock: Block = newBlock(rootStart);
 
-  let blockQueue: Block[] = [];
+  let blockStack: Block[] = [];
   let parentBlock: Block | null = null;
   let currentBlock: Block | null = rootBlock;
   for (let i = rootStart + 1, n = code.length; i < n; i++) {
@@ -100,7 +101,7 @@ function determineBlockStructure(code: string) {
     if (hasNewBlock) {
       braceLevel++;
       
-      if (parentBlock) blockQueue.push(parentBlock);
+      if (parentBlock) blockStack.push(parentBlock);
 
       parentBlock = currentBlock;
       currentBlock = newBlock(newBlockIndex);
@@ -114,7 +115,7 @@ function determineBlockStructure(code: string) {
       if (parentBlock) parentBlock.children.push(currentBlock);
 
       currentBlock = parentBlock;
-      parentBlock = blockQueue.pop() ?? null;
+      parentBlock = blockStack.pop() ?? null;
       braceLevel--;
     }
   }

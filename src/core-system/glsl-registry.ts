@@ -30,7 +30,9 @@ export class GLSLRegistry {
   resolve(code: string) {
     const { libraries, plugins } = this;
 
-    const module = new GLSLModule("@output", code, { libraries, plugins }, true);
+    const module = new GLSLModule("@shader", code, { libraries, plugins });
+
+    module.isShaderModule = true;
 
     module.applyPlugins();
 

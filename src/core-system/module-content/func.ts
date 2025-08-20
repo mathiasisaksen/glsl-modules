@@ -1,8 +1,8 @@
 
-import { ModuleEntity } from "./module-entity.js";
+import { BaseEntity } from "./base-entity.js";
 import { commaSeparatedSplitRegex } from "../../utils/regexes.js";
 
-export const functionSignatureRegex = /((\w+)\s+(\w+)\s*\(([^\)]*)\))(?![^{]*\})/;
+export const functionSignatureRegex = /((\w+)\s+(\w+)\s*\(([^\)]*)\))(?:\s*\{)/;
 
 const plainArgumentExtractRegex = /(\w+)\s+(\w+)/;
 
@@ -38,7 +38,8 @@ export class Argument {
   }
 }
 
-export class Func extends ModuleEntity {
+export class Func extends BaseEntity {
+  override readonly type = "function";
   arguments: Argument[];
 
   constructor(name: string, path: string, index: number, definition: string, args: Argument[]) {

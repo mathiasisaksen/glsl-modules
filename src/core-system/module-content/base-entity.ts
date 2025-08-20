@@ -1,6 +1,11 @@
 import { EntityDependency } from "./entity-dependency.js";
+import { ModuleEntity } from "./types.js";
 
-export abstract class ModuleEntity {
+const entityTypes = ["function", "variable", "struct", "define"] as const;
+export type EntityType = typeof entityTypes[number];
+
+export abstract class BaseEntity {
+  readonly type!: EntityType;
   key: string;
   id: string;
   name: string;
@@ -10,8 +15,6 @@ export abstract class ModuleEntity {
   index: number;
   
   dependencies: EntityDependency[] = [];
-
-  pluginData: any[] = [];
   
   constructor(name: string, path: string, index: number, definition: string) {
     this.id = `${path}/${name}`;
@@ -21,8 +24,6 @@ export abstract class ModuleEntity {
     this.index = index;
     this.definition = definition.trim();
   }
-
-  getKey() { return this.id; }
 
   getResolvedDefinition(idNameMap: Record<string, string>) {
     let { definition, name, id, dependencies } = this;

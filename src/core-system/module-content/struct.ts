@@ -1,10 +1,11 @@
 import { Argument } from "./func.js";
-import { ModuleEntity } from "./module-entity.js";
+import { BaseEntity } from "./base-entity.js";
 
 export const structRegex = /^ *(struct\s+(\w+)\s+{([^}]+)}\s*;)/m;
 const extractStructBodyRegex = /^[^{]*{([\s\S]*)}\s*;$/;
 
-export class Struct extends ModuleEntity {
+export class Struct extends BaseEntity {
+  override readonly type = "struct";
   arguments: Argument[];
 
   constructor(name: string, path: string, index: number, definition: string, args: Argument[]) {

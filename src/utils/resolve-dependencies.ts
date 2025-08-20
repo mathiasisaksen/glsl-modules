@@ -1,34 +1,42 @@
 
 import { GLSLLibrary } from "../core-system/glsl-library.js";
-import { ModuleEntity } from "../core-system/module-content/index.js";
+import { EntityDependency, ModuleEntity } from "../core-system/module-content/index.js";
 
+type DependencyStackEntry = { 
+  dependency: EntityDependency;
+  dependentId: string; 
+  libraries: Record<string, GLSLLibrary>;
+};
 
-// TODO make more efficient, now it resolves the same dependencies multiple times
 export function resolveDependencies(entities: ModuleEntity[], libraries: Record<string, GLSLLibrary>) {
-  
   let resolvedEntities: ModuleEntity[] = [];
 
-  const seenIds = new Set<string>(entities.map(({ id }) => id));
-  
+  const seenIds = new Set<string>();
+  const stack: DependencyStackEntry[] = [];
+
   for (const entity of entities) {
-    for (const { path, id, name, type } of entity.dependencies) {
-      if (seenIds.has(id)) continue;
+    seenIds.add(entity.id);
+    for (const dependency of entity.dependencies) stack.push({ dependency, dependentId: entity.id, libraries });
+  }
 
-      const libraryName = GLSLLibrary.extractLibraryNameFromPath(path);
-      
-      const library = libraries[libraryName];
-      
-      if (!library) throw new Error(`Library ${libraryName} missing`);
+  while (stack.length > 0) {
+    const { dependency, dependentId, libraries } = stack.pop()!;
 
-      const importedEntities = library.getEntity(path, name, type, entity.id);
+    const { path, id, name, type } = dependency;
 
-      resolvedEntities.push(...importedEntities);
-      
-      for (const entity of importedEntities) {
-        const dependencies = library.resolveDependencies(entity, seenIds);
-        resolvedEntities.push(...dependencies);
-      }
+    if (seenIds.has(id)) continue;
+
+    seenIds.add(id);
+
+    const activeLibrary = libraries[GLSLLibrary.extractLibraryNameFromPath(path)];
+
+    const exportedEntities = activeLibrary.getEntity(path, name, type, dependentId);
+
+    for (const entity of exportedEntities) {
+      for (const dependency of entity.dependencies) stack.push({ dependency, dependentId: entity.id, libraries: activeLibrary.dependencies });
+      resolvedEntities.push(entity);
     }
   }
+
   return resolvedEntities;
 }

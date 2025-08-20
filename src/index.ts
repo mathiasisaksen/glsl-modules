@@ -1,2 +1,2 @@
-export { GLSLRegistry, GLSLLibrary, GLSLPlugin as GLSLPlugin, definePlugin as createPlugin, resolveGLSL } from "./core-system/index.js";
+export { GLSLRegistry, GLSLLibrary, GLSLPlugin, definePlugin, resolveGLSL } from "./core-system/index.js";
 

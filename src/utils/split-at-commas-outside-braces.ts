@@ -1,5 +1,4 @@
 
-// TODO try to find regex solution
 export function splitAtCommasOutsideBraces(input: string) {
   const components: string[] = [];
 

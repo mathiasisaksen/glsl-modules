@@ -6,4 +6,3 @@ export * from "./match-iterator.js";
 export * from "./resolve-dependencies.js";
 export * from "./replace-by-index.js";
 export * from "./split-at-commas-outside-braces.js";
-export * from "./assert.js";

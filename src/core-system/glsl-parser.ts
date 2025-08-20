@@ -43,6 +43,10 @@ export class GLSLParser {
       const endIndex = findClosingIndex(this.code, startIndex);
 
       const [signature, returnType, name, argsString] = match.groups;
+
+      // Special case layout(location = 0), which may be incorrectly captured
+      if (name === "layout") continue;
+
       const definition = this.code.slice(startIndex, endIndex);
       const args = Argument.parseArgumentsString(argsString);
       functions.push(new Func(name, this.path, startIndex, definition, args));
@@ -163,16 +167,16 @@ export class GLSLParser {
 
         if (!extractMatch) throw new Error(`Invalid export entry: ${entry}`);
 
-        const [qualifier, name, alias] = extractMatch.groups;
-
+        let [qualifier, name, alias] = extractMatch.groups;
 
         if (alias) {
           if (this.code.match(new RegExp(`\\b${alias}\\b`)) !== null) throw new Error(`Export alias "${alias}" exists in same module`);
-      
-          this.code = this.code.replaceAll(new RegExp(`\\b${name}\\b`, "g"), alias);
+
+          this.code = this.code.replace(new RegExp(`\\b${name}\\b`, "g"), alias);
+          name = alias;
         }
 
-        if (qualifier && !exportQualifiers.some((q) => q === qualifier)) throw new Error(`Invalid export qualifier "${qualifier}"`);
+        if (qualifier && !exportQualifiers.includes(qualifier as ExportQualifier)) throw new Error(`Invalid export qualifier "${qualifier}"`);
 
         return new Export(name, qualifier as ExportQualifier);
       });

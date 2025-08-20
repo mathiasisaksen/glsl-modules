@@ -132,7 +132,7 @@ function processGlobalArrowFunctions(code: string, functionBlocks: FunctionBlock
 
 
 function processFunctionBlocks(functionBlocks: FunctionBlock[], nameUsageMap: NameUsageMap): string[] {
-  const unprocessedFunctionBlocks = [...functionBlocks];
+  const unprocessedFunctionBlocks = Array.from(functionBlocks);
   const processedFunctionStrings: string[] = [];
 
   while (unprocessedFunctionBlocks.length > 0) {

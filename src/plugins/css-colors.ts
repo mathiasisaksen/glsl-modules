@@ -6,7 +6,6 @@
  */
 
 import { GLSLPlugin } from "../core-system/glsl-plugin.js";
-import { assert } from "../utils/assert.js";
 import { findClosingIndex } from "../utils/find-closing-index.js";
 import { matchIterator } from "../utils/match-iterator.js";
 
@@ -16,7 +15,7 @@ type ColorStringFormat = typeof colorStringFormats[number];
 
 const formatRegexMap: Record<ColorStringFormat, RegExp> = {
   "named": /\bcss-([a-z]+)\b/i,
-  "hex": /#(?:[0-9a-f]){3,8}/i,
+  "hex": /#(?:(?:[0-9a-z]{3,4})|(?:[0-9a-z]{2}){3,4})\b/i,
   "rgb": /\brgba?\(/i,
   "hsl": /\bhsla?\(/i,
   "hwb": /\bhwb\(/i,
@@ -26,8 +25,6 @@ const formatRegexMap: Record<ColorStringFormat, RegExp> = {
   "oklab": /\boklab\(/i,
   "color": /\bcolor\(/i,
 }
-
-const validHexLengths = [4, 5, 7, 9];
 
 type ParsedColor = {
   selection: string;
@@ -59,9 +56,11 @@ export function cssColorsPlugin(options: ColorStringsOptions = {}): GLSLPlugin {
         } else if (format === "hex") {              
           for (const match of matchIterator(code, formatRegexMap.hex)) {
             const { selection, startIndex, endIndex } = match;
-            if (selection === "#def") continue;
+            
+            if (selection === "#define") continue;
+            
             const { length } = selection;
-            assert(validHexLengths.some((l) => l === length), `Invalid hex triplet ${match}`);
+            
             parsedColors.push({ selection, cssString: selection, hasAlpha: length === 5 || length === 9, startIndex, endIndex });
           }
         } else {

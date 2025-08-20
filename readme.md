@@ -11,7 +11,7 @@
 This means that the shaders are dynamically built and resolved at run time, not at build time.
 
 Interested in seeing it in action and trying it out for yourself?
-Check out the glsl-modules playground: https://glsl-modules.vercel.app
+Check out the playground: https://glsl-modules.vercel.app
 
 The library is still a work in progress, and the API is subject to change.
 
@@ -28,6 +28,7 @@ The library is still a work in progress, and the API is subject to change.
   * [named-arguments](#named-arguments)
   * [namespaced-imports](#namespaced-imports)
   * [css-colors](#css-colors)
+* [Current known limitations](#current-known-limitations)
 
 ## Installation
 The library is available on npm:
@@ -35,7 +36,6 @@ The library is available on npm:
 ```bash
 npm install glsl-modules
 ```
-
 
 ## Examples
 **Note**: The GLSL code snippets below are simplified, missing version directives and so on.
@@ -364,3 +364,20 @@ vec3 colorSpaceColor = color(display-p3 1 0.5 0.2);
 vec4 colorSpaceAlphaColor = color(srgb 0.2 0.4 0.6 / 0.3);
 
 ```
+
+## Current known limitations
+
+### Global #if, #else and #endif directives
+`glsl-modules` currently does not handle global `#if`-`#else`-`#endif` blocks (that is, not inside a function definition).
+This, for example, will not work:
+```glsl
+#if SOME_VALUE
+float foo() { return 1.0; }
+#else
+float foo() { return 2.0; }
+#endif
+```
+
+### Library name collisions
+It is currently not possible to add multiple libraries with the same name to a registry, or as dependencies to a library.
+This may be eventually solved by supporting aliases for library dependencies.
