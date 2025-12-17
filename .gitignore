@@ -62,6 +62,7 @@ tests/baselines/reference/dt
 .failed-tests
 TEST-results.xml
 package-lock.json
+pnpm-lock.yaml
 .eslintcache
 *v8.log
 /lib/

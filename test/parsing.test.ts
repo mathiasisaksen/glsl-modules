@@ -44,7 +44,7 @@ describe("Parsing code", () => {
     // Is content parsed correctly?
     expect(entities).toHaveLength(3);
     expect(entities.every(entity => entity instanceof BaseEntity));
-    
+
     const [func, variable, struct] = entities;
 
     expect(func).toBeInstanceOf(Func);
@@ -105,7 +105,11 @@ function getShaders() {
       float scale = 1.0;
       for (int i = 0; i < someValue; ++i) {
           scale *= 1.0 + 0.01 * float(i);
-          if (scale > 2.0) break;
+          if (scale > 2.0) {
+             break;
+          } else if (scale < 0.0) {
+            continue;
+          }
       }
 
       gl_Position = proj * view * vec4(pos * scale, 1.0);

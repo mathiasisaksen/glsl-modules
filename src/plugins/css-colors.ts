@@ -53,14 +53,14 @@ export function cssColorsPlugin(options: ColorStringsOptions = {}): GLSLPlugin {
             const color = groups[0];
             parsedColors.push({ selection, cssString: color, hasAlpha: false, startIndex, endIndex });
           }
-        } else if (format === "hex") {              
+        } else if (format === "hex") {
           for (const match of matchIterator(code, formatRegexMap.hex)) {
             const { selection, startIndex, endIndex } = match;
-            
+
             if (selection === "#define") continue;
-            
+
             const { length } = selection;
-            
+
             parsedColors.push({ selection, cssString: selection, hasAlpha: length === 5 || length === 9, startIndex, endIndex });
           }
         } else {
@@ -107,9 +107,10 @@ function parsedColorsToVec(colors: ParsedColor[]) {
   for (let i = 0; i < colors.length; i++) {
     const { selection, hasAlpha } = colors[i];
 
-    const components: number[] = [];
+    const components: string[] = [];
     for (let j = 0, n = hasAlpha ? 4 : 3; j < n; j++) {
-      components.push(data[4*i + j] / 255);
+      const component = (data[4 * i + j] / 255).toFixed(4);
+      components.push(component);
     }
 
     const colorVector = `vec${hasAlpha ? 4 : 3}(${components.join(", ")})`;
@@ -126,7 +127,7 @@ function removeNestedColorStrings(colors: ParsedColor[]) {
   if (colors.length === 0) return [];
 
   colors.sort((a, b) => a.startIndex - b.startIndex);
-  
+
   let currentParent = colors.shift()!;
   let newColors: ParsedColor[] = [currentParent];
 

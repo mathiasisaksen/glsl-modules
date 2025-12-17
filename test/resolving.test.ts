@@ -5,7 +5,7 @@ import { getShaderValidator } from "./shader-validator";
 
 describe("resolving shaders", async () => {
   const { validShader, nonexistentPathImportShader, nonexistentEntityImportShader, importingUnexportedShader } = getShaders();
-  
+
   const shaderValidator = await getShaderValidator();
 
   const registry = new GLSLRegistry({
@@ -14,8 +14,8 @@ describe("resolving shaders", async () => {
 
   it("Resolves shader imports", async () => {
     const resolvedShader = registry.resolve(validShader);
-    
-    ["PI", "TWO_PI", "GOLDEN_RATIO", "random", "random2", "random3", "valueNoise3"].forEach((fn) => 
+
+    ["PI", "TWO_PI", "GOLDEN_RATIO", "random", "random2", "random3", "valueNoise3"].forEach((fn) =>
       expect(resolvedShader).toMatch(new RegExp(`\\b${fn}\\b`))
     );
 

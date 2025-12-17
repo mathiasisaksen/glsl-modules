@@ -8,7 +8,7 @@ export class GLSLParser {
 
   imports: Import[] = [];
   exports: Export[] = [];
-  
+
   entities: ModuleEntity[] = [];
 
   code: string;
@@ -17,7 +17,7 @@ export class GLSLParser {
     this.originalCode = code;
     this.code = String(code);
     this.path = path;
-    
+
   }
 
   parseAll() {
@@ -44,8 +44,8 @@ export class GLSLParser {
 
       const [signature, returnType, name, argsString] = match.groups;
 
-      // Special case layout(location = 0), which may be incorrectly captured
-      if (name === "layout") continue;
+      // Special cases layout(location = 0) else if (), which may be incorrectly captured
+      if (name === "layout" || name === "if") continue;
 
       const definition = this.code.slice(startIndex, endIndex);
       const args = Argument.parseArgumentsString(argsString);
@@ -55,7 +55,7 @@ export class GLSLParser {
     }
 
     this.entities.push(...functions);
-    
+
     return functions;
   }
 
@@ -91,7 +91,7 @@ export class GLSLParser {
       const args = Argument.parse(fields);
 
       structs.push(new Struct(name, this.path, startIndex, definition, args));
-      
+
       this.code = blankOutSubstring(this.code, startIndex, endIndex);
     };
 
@@ -143,7 +143,7 @@ export class GLSLParser {
       }
 
       this.code = blankOutSubstring(this.code, startIndex, endIndex);
-      
+
     }
 
     this.imports = imports;
@@ -189,18 +189,18 @@ export class GLSLParser {
     const { entities, imports } = this;
 
     const candidateDependencies = getCandidateDependencies(entities, imports);
-    
+
     for (const entity of entities) entity.determineDependencies(candidateDependencies);
-  
+
     return this;
   }
- 
+
 }
 
 function getCandidateDependencies(entities: ModuleEntity[], imports: Import[]) {
   const candidateDependencies: EntityDependency[] = [];
   const seenIds = new Set<string>();
-  
+
   for (const { id, name, path } of entities) {
     if (seenIds.has(id)) continue;
     candidateDependencies.push(new EntityDependency(name, path, "ambient"));
