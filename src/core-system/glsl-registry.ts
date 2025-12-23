@@ -3,13 +3,13 @@ import { GLSLModule } from "./glsl-module.js";
 import { GLSLPlugin } from "./glsl-plugin.js";
 
 export type GLSLRegistryOptions = {
-  libraries?: GLSLLibrary[];
-  plugins?: GLSLPlugin[];
+  libraries?: Array<GLSLLibrary>;
+  plugins?: Array<GLSLPlugin>;
 }
 
 export class GLSLRegistry {
   libraries: Record<string, GLSLLibrary> = {};
-  plugins: GLSLPlugin[] = [];
+  plugins: Array<GLSLPlugin> = [];
 
   constructor(options?: GLSLRegistryOptions) {
     const { libraries = [], plugins = [] } = options ?? {};

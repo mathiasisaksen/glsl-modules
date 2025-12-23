@@ -2,17 +2,17 @@
 import { GLSLLibrary } from "../core-system/glsl-library.js";
 import { EntityDependency, ModuleEntity } from "../core-system/module-content/index.js";
 
-type DependencyStackEntry = { 
+type DependencyStackEntry = {
   dependency: EntityDependency;
-  dependentId: string; 
+  dependentId: string;
   libraries: Record<string, GLSLLibrary>;
 };
 
-export function resolveDependencies(entities: ModuleEntity[], libraries: Record<string, GLSLLibrary>) {
-  let resolvedEntities: ModuleEntity[] = [];
+export function resolveDependencies(entities: Array<ModuleEntity>, libraries: Record<string, GLSLLibrary>) {
+  let resolvedEntities: Array<ModuleEntity> = [];
 
   const seenIds = new Set<string>();
-  const stack: DependencyStackEntry[] = [];
+  const stack: Array<DependencyStackEntry> = [];
 
   for (const entity of entities) {
     seenIds.add(entity.id);

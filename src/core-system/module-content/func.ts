@@ -17,7 +17,7 @@ export class Argument {
     this.index = index;
   }
 
-  static parse(args: string[]) {
+  static parse(args: Array<string>) {
     return args.map((arg, i) => {
       const argumentMatch = arg.match(plainArgumentExtractRegex);
 
@@ -40,9 +40,9 @@ export class Argument {
 
 export class Func extends BaseEntity {
   override readonly type = "function";
-  arguments: Argument[];
+  arguments: Array<Argument>;
 
-  constructor(name: string, path: string, index: number, definition: string, args: Argument[]) {
+  constructor(name: string, path: string, index: number, definition: string, args: Array<Argument>) {
     super(name, path, index, definition);
     this.arguments = args;
     this.key = `${this.id}:${args.map(({ type }) => type).join(",")}`;
@@ -52,7 +52,7 @@ export class Func extends BaseEntity {
     const { definition } = this;
     const extractTypeAndBodyRegex = /(\w+)[^{]+{([\s\S]+)}/;
     const match = this.definition.match(extractTypeAndBodyRegex);
-    
+
     if (!match) throw new Error(`Unable to extract function body from ${definition}`);
 
     // Dependencies will either be used as a return type, parameter type or in the function body

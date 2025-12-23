@@ -35,7 +35,7 @@ type ParsedColor = {
 }
 
 type ColorStringsOptions = {
-  formats?: ColorStringFormat[];
+  formats?: Array<ColorStringFormat>;
 }
 
 export function cssColorsPlugin(options: ColorStringsOptions = {}): GLSLPlugin {
@@ -44,7 +44,7 @@ export function cssColorsPlugin(options: ColorStringsOptions = {}): GLSLPlugin {
   return {
     id: pluginId,
     preprocess(code) {
-      let parsedColors: ParsedColor[] = [];
+      let parsedColors: Array<ParsedColor> = [];
 
       for (const format of formats) {
         if (format === "named") {
@@ -88,7 +88,7 @@ export function cssColorsPlugin(options: ColorStringsOptions = {}): GLSLPlugin {
   }
 }
 
-function parsedColorsToVec(colors: ParsedColor[]) {
+function parsedColorsToVec(colors: Array<ParsedColor>) {
   const canvas = document.createElement("canvas");
   canvas.width = colors.length;
   canvas.height = 1;
@@ -107,7 +107,7 @@ function parsedColorsToVec(colors: ParsedColor[]) {
   for (let i = 0; i < colors.length; i++) {
     const { selection, hasAlpha } = colors[i];
 
-    const components: string[] = [];
+    const components: Array<string> = [];
     for (let j = 0, n = hasAlpha ? 4 : 3; j < n; j++) {
       const component = (data[4 * i + j] / 255).toFixed(4);
       components.push(component);
@@ -123,13 +123,13 @@ function parsedColorsToVec(colors: ParsedColor[]) {
   return replacements;
 }
 
-function removeNestedColorStrings(colors: ParsedColor[]) {
+function removeNestedColorStrings(colors: Array<ParsedColor>) {
   if (colors.length === 0) return [];
 
   colors.sort((a, b) => a.startIndex - b.startIndex);
 
   let currentParent = colors.shift()!;
-  let newColors: ParsedColor[] = [currentParent];
+  let newColors: Array<ParsedColor> = [currentParent];
 
   for (const color of colors) {
     if (color.startIndex > currentParent.startIndex && color.endIndex < currentParent.endIndex) continue;

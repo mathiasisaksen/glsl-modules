@@ -1,15 +1,16 @@
 import { findClosingIndex, blankOutSubstring, commaSeparatedSplitRegex, matchIterator, Match } from "../utils/index.js";
 import { GLSLLibrary } from "./glsl-library.js";
 import { Define, EntityDependency, Export, Argument, Func, Import, ModuleEntity, Struct, Variable, variableRegex, functionSignatureRegex, structRegex, defineRegex, importRegex, extractImportDataRegex, exportsRegex, exportQualifiers, ExportQualifier } from "./module-content/index.js";
+import { Uniform, uniformRegex } from "./module-content/uniform";
 
 export class GLSLParser {
   originalCode: string;
   path: string;
 
-  imports: Import[] = [];
-  exports: Export[] = [];
+  imports: Array<Import> = [];
+  exports: Array<Export> = [];
 
-  entities: ModuleEntity[] = [];
+  entities: Array<ModuleEntity> = [];
 
   code: string;
 
@@ -23,6 +24,7 @@ export class GLSLParser {
   parseAll() {
     this.parseImports();
     this.parseExports();
+    this.parseUniforms();
     this.parseFunctions();
     this.parseVariables();
     this.parseStructs();
@@ -31,8 +33,25 @@ export class GLSLParser {
     return this;
   }
 
+  parseUniforms() {
+    let uniforms: Array<Uniform> = [];
+
+    for (const match of matchIterator(this.code, uniformRegex)) {
+      const [definition, type, name] = match.groups;
+      const { startIndex, endIndex } = match;
+
+      uniforms.push(new Uniform(name, this.path, startIndex, definition));
+
+      this.code = blankOutSubstring(this.code, startIndex, endIndex);
+    }
+
+    this.entities.push(...uniforms);
+
+    return uniforms;
+  }
+
   parseFunctions() {
-    let functions: Func[] = [];
+    let functions: Array<Func> = [];
 
     while (true) {
       const match = Match.new(this.code, functionSignatureRegex);
@@ -60,7 +79,7 @@ export class GLSLParser {
   }
 
   parseVariables() {
-    let variables: Variable[] = [];
+    let variables: Array<Variable> = [];
 
     for (const match of matchIterator(this.code, variableRegex)) {
       const [definition, type, name, value] = match.groups;
@@ -77,7 +96,7 @@ export class GLSLParser {
   }
 
   parseStructs() {
-    let structs: Struct[] = [];
+    let structs: Array<Struct> = [];
 
     for (const match of matchIterator(this.code, structRegex)) {
       const [definition, name, fieldsString] = match.groups;
@@ -101,7 +120,7 @@ export class GLSLParser {
   }
 
   parseDefines() {
-    const defines: Define[] = [];
+    const defines: Array<Define> = [];
 
     for (const match of matchIterator(this.code, defineRegex)) {
       const [definition, name, value] = match.groups;
@@ -118,7 +137,7 @@ export class GLSLParser {
   }
 
   parseImports() {
-    const imports: Import[] = [];
+    const imports: Array<Import> = [];
 
     const currentLibraryName = GLSLLibrary.extractLibraryNameFromPath(this.path);
 
@@ -197,8 +216,8 @@ export class GLSLParser {
 
 }
 
-function getCandidateDependencies(entities: ModuleEntity[], imports: Import[]) {
-  const candidateDependencies: EntityDependency[] = [];
+function getCandidateDependencies(entities: Array<ModuleEntity>, imports: Array<Import>) {
+  const candidateDependencies: Array<EntityDependency> = [];
   const seenIds = new Set<string>();
 
   for (const { id, name, path } of entities) {

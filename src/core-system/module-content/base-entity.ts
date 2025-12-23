@@ -1,7 +1,7 @@
 import { EntityDependency } from "./entity-dependency.js";
 import { ModuleEntity } from "./types.js";
 
-const entityTypes = ["function", "variable", "struct", "define"] as const;
+const entityTypes = ["function", "variable", "struct", "define", "uniform"] as const;
 export type EntityType = typeof entityTypes[number];
 
 export abstract class BaseEntity {
@@ -11,11 +11,11 @@ export abstract class BaseEntity {
   name: string;
   path: string;
   definition: string;
-  
+
   index: number;
-  
-  dependencies: EntityDependency[] = [];
-  
+
+  dependencies: Array<EntityDependency> = [];
+
   constructor(name: string, path: string, index: number, definition: string) {
     this.id = `${path}/${name}`;
     this.key = this.id;
@@ -49,7 +49,7 @@ export abstract class BaseEntity {
     return this.dependencies.some((dependency) => dependency.id === candidate.id);
   }
 
-  addDependencies(...dependencies: EntityDependency[]) {
+  addDependencies(...dependencies: Array<EntityDependency>) {
     for (const dependency of dependencies) {
       if (this.dependencies.find((d) => d.id === dependency.id)) return;
       this.dependencies.push(dependency);
@@ -65,9 +65,9 @@ export abstract class BaseEntity {
   }
 
   protected abstract getDependencyTestString(): string;
-  determineDependencies(candidateDependencies: EntityDependency[]) {
+  determineDependencies(candidateDependencies: Array<EntityDependency>) {
     const dependencyTestString = this.getDependencyTestString();
-    
+
     const dependencies = candidateDependencies
       .filter((dependency) => dependency.isDependencyOf(dependencyTestString));
 

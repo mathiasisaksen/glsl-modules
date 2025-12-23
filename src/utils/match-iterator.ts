@@ -1,7 +1,7 @@
 
 export class Match {
   selection: string;
-  groups: string[];
+  groups: Array<string>;
   startIndex: number;
   endIndex: number;
 
@@ -25,7 +25,7 @@ export class Match {
 
 export function* matchIterator(string: string, regexp: RegExp) {
   if (regexp instanceof RegExp && regexp.global) throw new Error("Must be non-global regexp");
-  
+
   let indexOffset = 0;
 
   while (true) {
@@ -35,12 +35,12 @@ export function* matchIterator(string: string, regexp: RegExp) {
 
     const removedLength = match.endIndex;
     string = string.slice(removedLength);
-    
+
     match.startIndex += indexOffset;
     match.endIndex += indexOffset;
-    
+
     indexOffset += removedLength;
-    
+
     yield match;
   }
 }

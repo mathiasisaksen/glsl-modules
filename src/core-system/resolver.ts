@@ -6,8 +6,8 @@ import { ModuleEntity } from "./module-content/types.js";
 export class Resolver {
   module: GLSLModule;
 
-  allEntities: ModuleEntity[];
-  idToEntityMap: Record<string, ModuleEntity[]>;
+  allEntities: Array<ModuleEntity>;
+  idToEntityMap: Record<string, Array<ModuleEntity>>;
 
   constructor(module: GLSLModule) {
     this.module = module;
@@ -22,7 +22,7 @@ export class Resolver {
   }
 
   createIdToEntityMap() {
-    return this.allEntities.reduce<Record<string, ModuleEntity[]>>((map, entity) => {
+    return this.allEntities.reduce<Record<string, Array<ModuleEntity>>>((map, entity) => {
       (map[entity.id] ??= []).push(entity);
       return map;
     }, {});
@@ -97,7 +97,7 @@ export class Resolver {
     this.allEntities.sort((a, b) => keyToPositionMap[a.key] - keyToPositionMap[b.key]);
   }
 
-  createNameCollisionMap(entities: ModuleEntity[]) {
+  createNameCollisionMap(entities: Array<ModuleEntity>) {
     const nameEntityIdsMap: Record<string, Set<string>> = {};
 
     for (const entity of entities) {

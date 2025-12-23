@@ -1,6 +1,6 @@
 
 export function splitAtCommasOutsideBraces(input: string) {
-  const components: string[] = [];
+  const components: Array<string> = [];
 
   let nestedness = 0;
 
