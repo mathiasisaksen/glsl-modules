@@ -1,8 +1,8 @@
 export type DependencyGraph = Record<string, Set<string>>;
 
 export function topologicalSort(graph: DependencyGraph) {
-  const sortedNodes: string[] = [];
-  const activeNodes: string[] = [];
+  const sortedNodes: Array<string> = [];
+  const activeNodes: Array<string> = [];
 
   const ids = Object.keys(graph);
 
@@ -14,11 +14,11 @@ export function topologicalSort(graph: DependencyGraph) {
 
     for (const id of ids) {
       const parents = graph[id];
-      
+
       if (!parents.has(currentNode)) continue;
 
       parents.delete(currentNode);
-      
+
       if (parents.size === 0) activeNodes.push(id);
     }
 

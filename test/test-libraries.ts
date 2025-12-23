@@ -182,3 +182,20 @@ export const noiseLibrary = new GLSLLibrary({
   },
   dependencies: [randomLibrary]
 });
+
+const utilitiesDefinition = /*glsl*/`
+
+export { Ray }
+
+struct Ray {
+  vec3 origin;
+  vec3 direction;
+};
+
+`
+
+export const utilitiesLibrary = new GLSLLibrary({
+  name: "utilities",
+  definition: utilitiesDefinition
+});
+

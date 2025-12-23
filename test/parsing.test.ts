@@ -1,6 +1,7 @@
 import { GLSLParser } from './../src/core-system/glsl-parser';
 import { describe, expect, it } from "vitest";
-import { BaseEntity, Func, Struct, Variable } from '../src/core-system/module-content';
+import { BaseEntity, Func, Struct, structRegex, Variable, variableRegex } from '../src/core-system/module-content';
+import { Uniform } from '../src/core-system/module-content/uniform';
 
 describe("Parsing code", () => {
   const { exhaustiveFragmentShader, exhaustiveVertexShader, validFragmentShader } = getShaders();
@@ -22,6 +23,8 @@ describe("Parsing code", () => {
 
     const { imports, exports, entities } = parser;
 
+    entities.sort((a, b) => a.index - b.index);
+
     // Are imports are parsed correctly?
     expect(imports).toHaveLength(3);
 
@@ -42,10 +45,18 @@ describe("Parsing code", () => {
     expect(variableExport.qualifier).toBeUndefined();
 
     // Is content parsed correctly?
-    expect(entities).toHaveLength(3);
+    expect(entities).toHaveLength(4);
     expect(entities.every(entity => entity instanceof BaseEntity));
 
-    const [func, variable, struct] = entities;
+    const [uniform, variable, func, struct] = entities;
+
+    expect(uniform).toBeInstanceOf(Uniform);
+    expect(uniform.key).toBe("fragment-shader/u_data");
+    expect(uniform.dependencies).toHaveLength(1);
+
+    expect(variable).toBeInstanceOf(Variable);
+    expect(variable.key).toBe("fragment-shader/PI");
+    expect(variable.definition).toMatch(variableRegex);
 
     expect(func).toBeInstanceOf(Func);
     expect(func.key).toBe("fragment-shader/f:Data");
@@ -60,13 +71,9 @@ describe("Parsing code", () => {
     ]);
     expect(func.definition).toMatch(/^\w+\s+\w+\(.*\)\s*{[\s\S]*}$/);
 
-    expect(variable).toBeInstanceOf(Variable);
-    expect(variable.key).toBe("fragment-shader/PI");
-    expect(variable.definition).toMatch(/^(const\s+)?\w+\s+\w+\s*=\s*[\s\S]+;$/);
-
     expect(struct).toBeInstanceOf(Struct);
     expect(struct.key).toBe("fragment-shader/Data");
-    expect(struct.definition).toMatch(/^struct\s+\w+\s*{[\s\S]+};$/);
+    expect(struct.definition).toMatch(structRegex);
 
   });
 });
@@ -174,6 +181,8 @@ function getShaders() {
     internal foo as f,
     PI
   };
+
+  uniform Return u_data;
 
   const float PI = 3.14159265;
 

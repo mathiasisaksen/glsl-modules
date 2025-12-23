@@ -38,7 +38,7 @@ float someFunction() {
 `
 
 function destructuringPlugin(): GLSLPlugin {
-  
+
   return {
     id: pluginId,
 
@@ -53,19 +53,19 @@ function destructuringPlugin(): GLSLPlugin {
       return moduleEntities;
     },
   }
-  
+
 }
 
 type BlockStructure = {
   code: string,
-  childBlocks: BlockStructure[]
+  childBlocks: Array<BlockStructure>
 }
 
 type Block = {
   start: number;
   end: number;
-  children: Block[];
-  declaredVariables: string[];
+  children: Array<Block>;
+  declaredVariables: Array<string>;
   code: string;
 }
 
@@ -80,19 +80,19 @@ function determineBlockStructure(code: string) {
   const rootStart = code.indexOf("{");
   let rootBlock: Block = newBlock(rootStart);
 
-  let blockStack: Block[] = [];
+  let blockStack: Array<Block> = [];
   let parentBlock: Block | null = null;
   let currentBlock: Block | null = rootBlock;
   for (let i = rootStart + 1, n = code.length; i < n; i++) {
     if (destructures[destructureIndex]?.startIndex === i) i = destructures[destructureIndex++].endIndex;
-    
+
     const char = code[i];
     let hasNewBlock = char === "{";
     let newBlockIndex = i;
 
     if (forLoops[forIndex]?.startIndex === i) {
       hasNewBlock = true;
-      
+
       i = code.indexOf("{", i) + 1;
       forIndex++;
     }
@@ -100,14 +100,14 @@ function determineBlockStructure(code: string) {
 
     if (hasNewBlock) {
       braceLevel++;
-      
+
       if (parentBlock) blockStack.push(parentBlock);
 
       parentBlock = currentBlock;
       currentBlock = newBlock(newBlockIndex);
     } else if (char === "}") {
       if (!currentBlock) throw new Error(`Unbalanced braces in ${code}`);
-      
+
       currentBlock.end = i + 1;
       processClosedBlock(code, currentBlock);
       console.log(currentBlock.code);
@@ -129,7 +129,7 @@ function newBlock(start: number) {
 
 function processClosedBlock(code: string, block: Block) {
   const { start, end, children } = block;
-  
+
   block.code = code.slice(start, end);
   // Remove nested blocks
   for (let i = 0; i < children.length; i++) {
@@ -140,12 +140,12 @@ function processClosedBlock(code: string, block: Block) {
 
   // Find declared variables
 
-for (const match of matchIterator(block.code, /\b(\w)\s*=\s*/)) {
-  block.declaredVariables.push(match.groups[0]);
-}
+  for (const match of matchIterator(block.code, /\b(\w)\s*=\s*/)) {
+    block.declaredVariables.push(match.groups[0]);
+  }
 
-console.log(block.code);
-console.log(block.declaredVariables);
+  console.log(block.code);
+  console.log(block.declaredVariables);
 }
 
 function processBlock(root: Block) {
