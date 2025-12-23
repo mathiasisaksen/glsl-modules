@@ -12,8 +12,8 @@ const anonymousArrowFunctionRegex = /(\w+)\s*\(([\w, ]*)\)\s*=>\s*({)?/;
 
 type ArrowFunction = {
   type: string;
-  name: string; 
-  argsString: string; 
+  name: string;
+  argsString: string;
   body: string;
   startIndex: number;
   endIndex: number;
@@ -33,9 +33,9 @@ export function arrowFunctionsPlugin(): GLSLPlugin {
 
     preprocess(code) {
       let { remainingCode, functionBlocks } = extractFunctionBlocks(code);
-      
+
       remainingCode = processGlobalArrowFunctions(remainingCode, functionBlocks);
-      
+
       let nameUsageMap: NameUsageMap = {};
       // Ensure no collision with non-arrow/global arrow functions
       for (const { name } of functionBlocks) nameUsageMap[name] = -1;
@@ -50,13 +50,13 @@ export function arrowFunctionsPlugin(): GLSLPlugin {
 }
 
 function extractFunctionBlocks(code: string) {
-  const functionBlocks: FunctionBlock[] = [];
+  const functionBlocks: Array<FunctionBlock> = [];
 
   while (true) {
     const match = Match.new(code, functionSignatureRegex);
 
     if (!match) break;
-   
+
     const name = match.groups[2];
     const start = match.startIndex;
     const end = findClosingIndex(code, start);
@@ -105,14 +105,14 @@ function findNextArrowFunction(code: string, mode: "named" | "anonymous"): Arrow
 
   let newFunctionBody = isBlockFunction ? body : `{\n  return ${body}${body.endsWith(";") ? "" : ";"}\n}`;
 
-  return { 
-    type, name, argsString, body: newFunctionBody, 
+  return {
+    type, name, argsString, body: newFunctionBody,
     startIndex, endIndex, isAnonymous: !namedMode
   };
 }
 
 
-function processGlobalArrowFunctions(code: string, functionBlocks: FunctionBlock[]) {  
+function processGlobalArrowFunctions(code: string, functionBlocks: Array<FunctionBlock>) {
   while (true) {
     const arrowFunction = findNextArrowFunction(code, "named");
 
@@ -126,21 +126,21 @@ function processGlobalArrowFunctions(code: string, functionBlocks: FunctionBlock
     code = replaceByIndex(code, startIndex, endIndex, "");
 
   }
-  
+
   return code;
 }
 
 
-function processFunctionBlocks(functionBlocks: FunctionBlock[], nameUsageMap: NameUsageMap): string[] {
+function processFunctionBlocks(functionBlocks: Array<FunctionBlock>, nameUsageMap: NameUsageMap): Array<string> {
   const unprocessedFunctionBlocks = Array.from(functionBlocks);
-  const processedFunctionStrings: string[] = [];
+  const processedFunctionStrings: Array<string> = [];
 
   while (unprocessedFunctionBlocks.length > 0) {
     let { definition } = unprocessedFunctionBlocks.shift()!;
 
-    let newFunctions: ArrowFunction[] = [];
+    let newFunctions: Array<ArrowFunction> = [];
     let seenNames = new Set<string>();
-  
+
     // Find named arrow functions
     while (true) {
       const arrowFunction = findNextArrowFunction(definition, "named");
@@ -150,7 +150,7 @@ function processFunctionBlocks(functionBlocks: FunctionBlock[], nameUsageMap: Na
       newFunctions.push(arrowFunction);
       seenNames.add(arrowFunction.name);
       definition = replaceByIndex(definition, arrowFunction.startIndex, arrowFunction.endIndex, "");
-    } 
+    }
 
     // Find anonymous functions
     while (true) {
@@ -170,7 +170,7 @@ function processFunctionBlocks(functionBlocks: FunctionBlock[], nameUsageMap: Na
 
     for (let i = 0, n = newFunctions.length; i < n; i++) {
       const { name, type, argsString, body, isAnonymous } = newFunctions[i];
-  
+
       let newFunctionName: string;
 
       if (isAnonymous) {
@@ -179,11 +179,11 @@ function processFunctionBlocks(functionBlocks: FunctionBlock[], nameUsageMap: Na
         const newFunctionIndex = nameUsageMap[name] ??= 0;
         newFunctionName = `${name}_${newFunctionIndex}`;
       }
-      
+
       const newFunctionDefinition = `${type} ${newFunctionName}(${argsString}) ${body}`;
       unprocessedFunctionBlocks.push({ name: newFunctionName, definition: newFunctionDefinition });
-      
-      if (isAnonymous) continue; 
+
+      if (isAnonymous) continue;
 
       const functionCallRegex = new RegExp(`\\b${name}\\b`, "g");
       // If named, ensure that any reference of old function name is replaced with new
@@ -192,11 +192,11 @@ function processFunctionBlocks(functionBlocks: FunctionBlock[], nameUsageMap: Na
       for (let j = i + 1; j < n; j++) { // Including any arrow function that comes after
         const fn = newFunctions[j];
         fn.body = fn.body.replace(functionCallRegex, newFunctionName);
-      }      
+      }
     }
 
     for (const name of seenNames) nameUsageMap[name]++;
-  
+
     processedFunctionStrings.push(definition);
 
   }

@@ -8,18 +8,18 @@ export type EntityWithContext<E extends ModuleEntity = ModuleEntity> = {
 
 export class PluginContext {
   path: string;
-  localEntities!: EntityWithContext[]; // Entities that are defined in module
-  importedEntities!: EntityWithContext[]; // Entities that are explicitly imported
-  allEntities!: ModuleEntity[]; // All entities, including all dependencies of imports
+  localEntities!: Array<EntityWithContext>; // Entities that are defined in module
+  importedEntities!: Array<EntityWithContext>; // Entities that are explicitly imported
+  allEntities!: Array<ModuleEntity>; // All entities, including all dependencies of imports
 
-  imports!: Import[];
+  imports!: Array<Import>;
 
-  constructor(path: string, localEntities: ModuleEntity[], imports: Import[], importedEntities: ModuleEntity[]) {
+  constructor(path: string, localEntities: Array<ModuleEntity>, imports: Array<Import>, importedEntities: Array<ModuleEntity>) {
     this.path = path;
     this.updateEntities(localEntities, imports, importedEntities);
   }
 
-  updateEntities(localEntities: ModuleEntity[], imports: Import[], importedEntities: ModuleEntity[]) {
+  updateEntities(localEntities: Array<ModuleEntity>, imports: Array<Import>, importedEntities: Array<ModuleEntity>) {
     this.localEntities = localEntities
       .map((entity) => ({ entity, localName: entity.name, isImport: false }));
     this.imports = imports;
@@ -37,9 +37,9 @@ export class PluginContext {
     this.allEntities = localEntities.concat(importedEntities);
   }
 
-  getEntitiesByName(name: string): EntityWithContext[] {
+  getEntitiesByName(name: string): Array<EntityWithContext> {
     let entities = this.localEntities.filter((e) => e.localName === name);
-  
+
     if (entities.length > 0) return entities;
 
     return this.importedEntities.filter((e) => e.localName === name);
@@ -53,12 +53,12 @@ export class PluginContext {
 export type GLSLPlugin = {
   id: string,
   preprocess?: (code: string, isShader: boolean) => string;
-  transform?: (moduleEntities: ModuleEntity[], context: PluginContext, isShader: boolean) => ModuleEntity[] | void;
+  transform?: (moduleEntities: Array<ModuleEntity>, context: PluginContext, isShader: boolean) => Array<ModuleEntity> | void;
   postprocess?: (code: string, entity: ModuleEntity, context: PluginContext, isShader: boolean) => string,
 }
 
-type GLSLPluginFunction<A extends any[] = any[]> = (...args: A) => GLSLPlugin;
+type GLSLPluginFunction<A extends Array<any> = Array<any>> = (...args: A) => GLSLPlugin;
 
-export function definePlugin<A extends any[]>(pluginFunction: GLSLPluginFunction<A>) {
+export function definePlugin<A extends Array<any>>(pluginFunction: GLSLPluginFunction<A>) {
   return pluginFunction;
 }

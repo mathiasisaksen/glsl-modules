@@ -14,15 +14,15 @@ type EntityRequest = {
 
 export type ModuleContext = {
   libraries: Record<string, GLSLLibrary>,
-  plugins: GLSLPlugin[],
+  plugins: Array<GLSLPlugin>,
 }
 
 export class GLSLModule {
   path: string;
 
-  entities: ModuleEntity[] = [];
-  imports: Import[] = [];
-  exports: Export[] = [];
+  entities: Array<ModuleEntity> = [];
+  imports: Array<Import> = [];
+  exports: Array<Export> = [];
   unparsedCode: string;
 
   isShaderModule = false;
@@ -64,7 +64,7 @@ export class GLSLModule {
     const { plugins, libraries } = this.moduleContext;
 
     let importedEntities = resolveDependencies(this.entities, libraries);
-    
+
     const context = this.pluginContext = new PluginContext(path, this.entities, this.imports, importedEntities);
 
     for (const plugin of plugins) {
@@ -86,7 +86,7 @@ export class GLSLModule {
     this.entities = context.localEntities.map(({ entity }) => entity);
   }
 
-  getEntity(request: EntityRequest): ModuleEntity[] {
+  getEntity(request: EntityRequest): Array<ModuleEntity> {
     const { name, type } = request;
 
     if (type === "import") this.validateExport(request);

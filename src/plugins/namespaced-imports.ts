@@ -11,17 +11,17 @@ export function namespacedImportsPlugin(): GLSLPlugin {
       let result = input;
 
       while (true) {
-        const globalImportMatch = result.match(globalImportRegex);        
+        const globalImportMatch = result.match(globalImportRegex);
 
         if (!globalImportMatch) break;
-        
+
         const [globalImportString, , path, namespace] = globalImportMatch;
-        
+
         const usageRegex = findUsageRegex(namespace);
-        
+
         // A usage is a place where the global import is used
-        const usages =  new Set(result.match(usageRegex) ?? []);
-        const newImportsMap: Record<string, string[]> = {};
+        const usages = new Set(result.match(usageRegex) ?? []);
+        const newImportsMap: Record<string, Array<string>> = {};
 
         for (const usage of usages) {
           const pathComponents = usage.split(".");
@@ -41,7 +41,7 @@ export function namespacedImportsPlugin(): GLSLPlugin {
 
         result = result.replace(globalImportString, newImportBlocks.join("\n"));
       }
-      
+
       return result;
     },
   }

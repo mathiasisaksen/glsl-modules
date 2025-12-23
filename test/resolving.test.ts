@@ -1,15 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { GLSLRegistry } from "../src/core-system";
-import { constantsLibrary, noiseLibrary, randomLibrary } from "./test-libraries";
+import { constantsLibrary, noiseLibrary, randomLibrary, utilitiesLibrary } from "./test-libraries";
 import { getShaderValidator } from "./shader-validator";
+import { validShader, nonexistentPathImportShader, nonexistentEntityImportShader, importingUnexportedShader } from "./shaders";
 
 describe("resolving shaders", async () => {
-  const { validShader, nonexistentPathImportShader, nonexistentEntityImportShader, importingUnexportedShader } = getShaders();
-
   const shaderValidator = await getShaderValidator();
 
   const registry = new GLSLRegistry({
-    libraries: [constantsLibrary, randomLibrary, noiseLibrary]
+    libraries: [constantsLibrary, randomLibrary, noiseLibrary, utilitiesLibrary]
   });
 
   it("Resolves shader imports", async () => {
@@ -38,52 +37,3 @@ describe("resolving shaders", async () => {
   await shaderValidator?.close();
 });
 
-function getShaders() {
-  const validShader = `
-  #version 300 es
-
-  precision highp float;
-
-  in vec2 uv;
-  out vec4 color;
-
-  import { TWO_PI, GOLDEN_RATIO } from "constants";
-  import { random2 } from "random/2d";
-  import { random } from "random/1d";
-  import { valueNoise3 } from "noise/value";
-
-  void main() {
-    float value1 = TWO_PI*random(uv);
-    vec2 value2 = GOLDEN_RATIO*random2(uv);
-    vec3 value3 = valueNoise3(uv, 0.1, 1.0);
-    color = vec4(value3 + vec3(value1, value2), 1.0);
-  }
-  `.trim();
-
-  const nonexistentPathImportShader = `
-  import { random } from "random";
-
-  void main() {
-    vec2 value = random(vec2(1, 0));
-  }
-  `
-
-  const nonexistentEntityImportShader = `
-  import { rotate } from "random/1d";
-
-  void main() {
-    vec2 value = rotate(vec2(1, 0), 0.78);
-  }
-  `
-
-  const importingUnexportedShader = `
-  import { hash } from "random/1d";
-
-  void main() {
-    uint value = hash(1u);
-  }
-  `
-
-  return { validShader, nonexistentPathImportShader, nonexistentEntityImportShader, importingUnexportedShader };
-
-}

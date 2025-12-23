@@ -1,6 +1,6 @@
 {
   "name": "glsl-modules",
-  "version": "0.5.0",
+  "version": "0.4.0",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -36,7 +36,7 @@
   "homepage": "https://github.com/mathiasisaksen/glsl-modules#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mathiasisaksen/glsl-modules.git"
+    "url": "https://github.com/mathiasisaksen/glsl-modules.git"
   },
   "bugs": "https://github.com/mathiasisaksen/glsl-modules/issues",
   "description": "A GLSL preprocessor for JavaScript that adds modular import/export support and a flexible plugin system for custom syntax and functionality.",

@@ -294,6 +294,9 @@ or, when combined with `arrow-functions`, an anonymous arrow function:
 float df = derivative(float (float x) => x*x, 0.5, 1e-4);
 ```
 
+As of now, function overloads are not supported.
+Only one higher-order function can have a given name.
+
 ### named-arguments
 Makes it possible to specify arguments in a JS object-like fashion, both when calling functions and creating structs.
 Useful when a function has many arguments, to avoid constantly looking up its definition.
