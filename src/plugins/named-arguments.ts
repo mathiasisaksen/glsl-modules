@@ -23,7 +23,7 @@ export function namedArgumentsPlugin(): GLSLPlugin {
 
         const newParameterList = Object.entries(parameterMap)
           .map(([name, value]) => `${name}: ${value}`)
-          .join(", ") + 
+          .join(", ") +
           ","; // Ensures the list ends with a comma
 
         code = code.replace(parameterList, newParameterList);
@@ -32,11 +32,11 @@ export function namedArgumentsPlugin(): GLSLPlugin {
       return code;
     },
     transform(moduleEntities, context) {
-      
+
       for (const entity of moduleEntities) {
-        
+
         const replacements: { old: string, new: string }[] = [];
-        
+
         for (const match of matchIterator(entity.definition, namedParameterRegex)) {
 
           const call = match.selection;
@@ -45,25 +45,25 @@ export function namedArgumentsPlugin(): GLSLPlugin {
           const candidates = context
             .getEntitiesByName(entityName)
             .map((v) => v.entity)
-            .filter((e) => e instanceof Func || e instanceof Struct) as (Func | Struct)[];
-          
+            .filter((e) => e.type === "function" || e.type === "struct") as (Func | Struct)[];
+
           if (!candidates) throw new Error(`No function/struct "${entityName}" found`);
-  
+
           const parameterValueMap = createParameterValueMap(parameterList, "unwrap");
-  
+
           // Used to find the correct function overload
           const parameterNameString = Object.keys(parameterValueMap).sort().join(",");
-  
+
           // Find function that satisfies parameter names
           const entity = candidates.find((fn) => {
             const currentParameterNameString = fn.arguments.map(({ name }) => name).sort().join(",");
             return currentParameterNameString === parameterNameString;
           }) as Func | undefined;
-  
+
           if (!entity) throw new Error(`No overload of ${entityName} with parameter names ${parameterNameString}`)
-  
+
           const valueString = entity.arguments.map((arg) => parameterValueMap[arg.name]).join(", ");
-  
+
           const newCall = call.replace(/{[^}]+}/, valueString);
 
           replacements.push({ old: call, new: newCall });
@@ -71,8 +71,8 @@ export function namedArgumentsPlugin(): GLSLPlugin {
 
         entity.definition = replacements.reduce((definition, r) => definition.replace(r.old, r.new), entity.definition);
 
-      }        
-      
+      }
+
 
     }
 

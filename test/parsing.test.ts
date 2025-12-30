@@ -50,7 +50,7 @@ describe("Parsing code", () => {
 
     const [uniform, variable, func, struct] = entities;
 
-    expect(uniform).toBeInstanceOf(Uniform);
+    expect(uniform.type).toBeInstanceOf(Uniform);
     expect(uniform.key).toBe("fragment-shader/u_data");
     expect(uniform.dependencies).toHaveLength(1);
 

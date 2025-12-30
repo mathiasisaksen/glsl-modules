@@ -71,7 +71,7 @@ function getFunctionalArguments(func: Func) {
 }
 
 function isHigherOrderFunction(entity: ModuleEntity) {
-  return entity instanceof Func &&
+  return entity.type === "function" &&
     entity.arguments.some((arg) => arg.type === functionalTypePlaceholder);
 }
 
@@ -100,7 +100,7 @@ function determineNewFunctions(moduleEntities: Array<ModuleEntity>, context: Plu
   while (candidateEntities.length > 0) {
     const candidateEntity = candidateEntities.pop()!;
 
-    if (!(candidateEntity instanceof Func)) continue;
+    if (candidateEntity.type !== "function") continue;
 
     const candidateFunctionalArguments = getFunctionalArguments(candidateEntity);
     const candidateIsHOF = candidateFunctionalArguments.length > 0;
