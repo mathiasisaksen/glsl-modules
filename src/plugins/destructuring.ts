@@ -45,7 +45,7 @@ function destructuringPlugin(): GLSLPlugin {
     transform(moduleEntities) {
       determineBlockStructure(testCode);
       for (const entity of moduleEntities) {
-        if (!(entity instanceof Func)) continue;
+        if (entity.type !== "function") continue;
 
         entity.definition
       }
